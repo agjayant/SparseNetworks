@@ -17,5 +17,5 @@ function U = notf_frompy(R, L, k)
         end
     end
 
-    U = no_tenfact(T, L, 3);
+    U = no_tenfact(T, L, k);
 end
