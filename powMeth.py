@@ -69,8 +69,8 @@ def powMeth( k, X, y):
     C = 3*np.linalg.norm(getM2(X,y))
     T = 10000
     d =  np.shape(X)[1]
-    V1 = np.random.normal(0.0, 0.1 , (d,k))
-    V2 = np.random.normal(0.0, 0.1 , (d,k))
+    V1 = np.random.normal(0.0, 1.0 , (d,k))
+    V2 = np.random.normal(0.0, 1.0 , (d,k))
 
     for i in range(T):
         P2V1 = getP2V(V1, X, y, k)

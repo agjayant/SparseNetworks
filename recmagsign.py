@@ -20,7 +20,7 @@ def recmagsgn(V, U, X, y, m , W_gt):
     X2 = X[divInd:]
     y2 = y[divInd:]
 
-    alpha = np.random.normal(0.0, 0.1 , d)
+    alpha = np.random.normal(0.0, 1.0 , d)
     alpha = alpha/np.linalg.norm(alpha)
 
     ## TODO: Assuming l1=1 and l2=2
