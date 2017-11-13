@@ -91,10 +91,8 @@ def train(train_x, train_y, test_x, test_y, tensorWeights, v_gt, s=0.15, T = 20,
     sess = tf.Session(config=config)
     init = tf.global_variables_initializer()
     sess.run(init)
-    epsilon = 1e-4
     train_loss = []
     test_loss = []
-    T = 20
 
     for epoch in range(T):
 
