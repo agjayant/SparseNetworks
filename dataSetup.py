@@ -38,22 +38,58 @@ def generateWeights(d = 10, k = 5, s_gt = 0.15, kappa = 2 ):
     W_gt = np.dot(np.dot(U, Sigma), np.transpose(V))
     v_gt = np.asarray(v_gt)
 
-#     s_gt = 1
-    # normW1 = []
-    # for i in range(k):
-    #     this_norm = np.linalg.norm(W_gt[:,i])
-    #     normW1.append((this_norm,i))
-    # normW1.sort()
-
-    # for i in range(s_gt):
-    #     this_ind = normW1[i][1]
-    #     W_gt[:,this_ind] = np.zeros(d)
-
     for i in range(d):
         for j in range(k):
             this_norm = np.linalg.norm(W_gt[i,j])
             if this_norm <= s_gt:
                 W_gt[i,j] = 0.0
+
+    m = np.zeros((4,k))
+    for i in range(k):
+        m[0,i] = gamma(1,np.linalg.norm(W_gt[:,i]))
+        m[1,i] = gamma(2,np.linalg.norm(W_gt[:,i])) - gamma(0,np.linalg.norm(W_gt[:,i]))
+        m[2,i] = gamma(3,np.linalg.norm(W_gt[:,i])) - 3*gamma(1,np.linalg.norm(W_gt[:,i]))
+        m[3,i] = gamma(4,np.linalg.norm(W_gt[:,i])) + 3*gamma(0,np.linalg.norm(W_gt[:,i])) - 6*gamma(2,np.linalg.norm(W_gt[:,i]))
+    return [W_gt, v_gt, m]
+
+def generateWeights_topk(d = 10, k = 5, s_gt = 0.75, kappa = 2 ):
+
+    num_sparse = int(d*k*(1-s_gt))
+
+    gauss_mat_u = np.random.normal(0.0, 1.0 , (d,k))
+    gauss_mat_v = np.random.normal(0.0, 1.0 , (k,k))
+
+    U, temp = np.linalg.qr(gauss_mat_u)
+    V, temp = np.linalg.qr(gauss_mat_v)
+
+    # U, V = np.linalg.qr(gauss_mat_u)
+    diag = []
+    v_gt = []
+    v_choice = [1,-1]
+    for iter in range(k):
+        diag.append(1+1.*iter*(kappa-1)/(k-1))
+        v_gt.append(random.choice(v_choice))
+
+    Sigma = np.diag(diag)
+    W_gt = np.dot(np.dot(U, Sigma), np.transpose(V))
+    v_gt = np.asarray(v_gt)
+
+    normW1 = []
+
+    for i in range(d):
+
+        for j in range(k):
+            this_norm = np.linalg.norm(W_gt[i,j])
+            normW1.append((this_norm, (i,j) ))
+
+    normW1.sort()
+
+    for i in range(num_sparse):
+        d_ind = normW1[i][1][0]
+        k_ind = normW1[i][1][1]
+
+        W_gt[d_ind,k_ind] = 0.0
+
 
     m = np.zeros((4,k))
     for i in range(k):
