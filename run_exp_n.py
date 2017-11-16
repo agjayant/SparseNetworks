@@ -7,8 +7,6 @@ from dataSetup import generateData, generateWeights, generateWeights_topk
 from recovAnalysis import recovery, structDiff
 from trainerUtil import tensorInit, train, train_topk, init_weights
 
-
-
 num_epoch = 25
 num_epoch_pretrain = 5
 epsilon = 1e-4
@@ -40,6 +38,11 @@ for n in exp_n:
 
     recovery_this = []
     recovery_o_this = []
+
+    truep = []
+    truep_o = []
+    truen = []
+    truen_o = []
 
     for trial in range(num_trials):
 
@@ -73,6 +76,11 @@ for n in exp_n:
         recovery_this.append(recoveryVal)
         recovery_o_this.append(recoveryVal_o)
 
+        truen.append(recoveryStructure[2])
+        truen_o.append(recoveryStructure_o[2])
+        truep.append(recoveryStructure[3])
+        truep_o.append(recoveryStructure_o[3])
+
     # print recoveryStructure, recoveryStructure_o
     # print recoveryVal, recoveryVal_o
 
@@ -82,11 +90,26 @@ for n in exp_n:
     avg_recov_o = np.mean(recovery_o_this)
     std_recov_o = np.std(recovery_o_this)
 
+    avg_truen = np.mean(truen)
+    avg_truep = np.mean(truep)
+    avg_truen_o = np.mean(truen_o)
+    avg_truep_o = np.mean(truep_o)
+
+    std_truen = np.mean(truen)
+    std_truep = np.mean(truep)
+    std_truen_o = np.mean(truen_o)
+    std_truepn_o = np.mean(truep_o)
+
 
     # print "Average Recovery for n= ", n, "  ", avg_recov
     # print "Standard Deviation of Recovery for n= ", n, "  ", std_recov
 
-    logFile.write(str(n)+' '+str(avg_recov)+' '+str(std_recov) + ' '+str(avg_recov_o)+' '+str(std_recov_o) + '\n')
+    logFile.write(str(n)+' '+str(avg_recov)+' '+str(std_recov) + ' '+str(avg_recov_o)+' '+str(std_recov_o)+' ' )
+    logFile.write(str(avg_truen) + ' '+ str(std_truen)+' ')
+    logFile.write(str(avg_truen_o) + ' '+ str(std_truen_o)+' ')
+    logFile.write(str(avg_truep) + ' '+ str(std_truep)+' ')
+    logFile.write(str(avg_truep_o) + ' '+ str(std_truep_o))
+    logFile.write('\n')
     # logFile.write(str(n)+' '+str(recoveryVal)+' '+
                   # str(recoveryVal_o)+' '+str(recoveryStructure)+' '+str(recoveryStructure_o)+'\n')
 
