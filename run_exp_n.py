@@ -95,10 +95,10 @@ for n in exp_n:
     avg_truen_o = np.mean(truen_o)
     avg_truep_o = np.mean(truep_o)
 
-    std_truen = np.mean(truen)
-    std_truep = np.mean(truep)
-    std_truen_o = np.mean(truen_o)
-    std_truepn_o = np.mean(truep_o)
+    std_truen = np.std(truen)
+    std_truep = np.std(truep)
+    std_truen_o = np.std(truen_o)
+    std_truep_o = np.std(truep_o)
 
 
     # print "Average Recovery for n= ", n, "  ", avg_recov
