@@ -134,7 +134,7 @@ def train(train_x, train_y, test_x, test_y, tensorWeights, v_gt, s=0.15, T = 25,
     sess.close()
     return final_w1, train_loss, test_loss
 
-def train_topk(train_x, train_y, test_x, test_y, tensorWeights, v_gt, s=0.75, T = 25, batch_size = 10, lr = 1e-3,epsilon = 1e-4, T_pretrain = 5):
+def train_topk(train_x, train_y, test_x, test_y, tensorWeights, v_gt, s=0.75, T = 25, batch_size = 10, lr = 1e-3,epsilon = 1e-4, T_pretrain = 5, random=False):
 
     d = np.shape(train_x)[1]
     n = np.shape(train_x)[0]
@@ -147,9 +147,11 @@ def train_topk(train_x, train_y, test_x, test_y, tensorWeights, v_gt, s=0.75, T 
     y = tf.placeholder("float64", shape=[None, 1])
 
     # Weight initializations
-    # w_1 = init_weights((d, k))
-    # w_1 = tf.Variable(tf.cast(w_1, tf.float64))
-    w_1 = tf.Variable(np.transpose(tensorWeights[0]))
+    if random:
+        w_1 = init_weights((d, k))
+        w_1 = tf.Variable(tf.cast(w_1, tf.float64))
+    else:
+        w_1 = tf.Variable(np.transpose(tensorWeights[0]))
 
     # w_2 = []
     # v_choice = [1,-1]

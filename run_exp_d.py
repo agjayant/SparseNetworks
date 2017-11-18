@@ -11,7 +11,7 @@ import argparse
 argparser  = argparse.ArgumentParser(description="Experiments n")
 argparser.add_argument('-w', '--winit', help='Weight Initialization', default='tensor')
 argparser.add_argument('-i', '--iht', help='IHT Algorithm Type', default='topk')
-argparser.add_argument('-l', '--log', help='Log File Name', default='log_n.txt')
+argparser.add_argument('-l', '--log', help='Log File Name', default='log_d.txt')
 argparser.add_argument('-n', '--numT', help='Number of Trials', default=5)
 argparser.add_argument('-gt', '--gtinit', help='Type of Ground Truth Weight Init', default=False)
 args = argparser.parse_args()
@@ -47,11 +47,11 @@ sparse_train = 0.75
 
 num_trials = args.numT
 
-## Vary n
-exp_n = [2000, 4000, 6000, 8000, 10000]
+## Vary d
+exp_d = [10, 20, 40, 70, 100]
 
 logFile = open(args.log,'w')
-for n in exp_n:
+for d in exp_d:
 
 
     recovery_this = []
@@ -64,7 +64,7 @@ for n in exp_n:
 
     for trial in range(num_trials):
 
-        print "Experiment Starting for n= ",n, " trial: ", trial
+        print "Experiment Starting for d= ",d, " trial: ", trial
 
         if iht == 'topk':
             w_gt, v_gt, m =  generateWeights_topk(d, k, sparse_gt, bool(args.gtinit))
@@ -137,7 +137,7 @@ for n in exp_n:
     std_truep_o = np.std(truep_o)
 
 
-    logFile.write(str(n)+' '+str(avg_recov)+' '+str(std_recov) + ' '+str(avg_recov_o)+' '+str(std_recov_o)+' ' )
+    logFile.write(str(d)+' '+str(avg_recov)+' '+str(std_recov) + ' '+str(avg_recov_o)+' '+str(std_recov_o)+' ' )
     logFile.write(str(avg_truen) + ' '+ str(std_truen)+' ')
     logFile.write(str(avg_truen_o) + ' '+ str(std_truen_o)+' ')
     logFile.write(str(avg_truep) + ' '+ str(std_truep)+' ')

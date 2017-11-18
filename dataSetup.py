@@ -19,7 +19,7 @@ def gamma(j,sigma):
     return estm/10000
 
 
-def generateWeights(d = 10, k = 5, s_gt = 0.15, kappa = 2 ):
+def generateWeights(d = 10, k = 5, s_gt = 0.15, kappa = 2, typeW1 = False ):
     gauss_mat_u = np.random.normal(0.0, 1.0 , (d,k))
     gauss_mat_v = np.random.normal(0.0, 1.0 , (k,k))
 
@@ -35,7 +35,11 @@ def generateWeights(d = 10, k = 5, s_gt = 0.15, kappa = 2 ):
         v_gt.append(random.choice(v_choice))
 
     Sigma = np.diag(diag)
-    W_gt = np.dot(np.dot(U, Sigma), np.transpose(V))
+    if typeW1:
+        W_gt = gauss_mat_u
+    else:
+        W_gt = np.dot(np.dot(U, Sigma), np.transpose(V))
+
     v_gt = np.asarray(v_gt)
 
     for i in range(d):
@@ -52,7 +56,7 @@ def generateWeights(d = 10, k = 5, s_gt = 0.15, kappa = 2 ):
         m[3,i] = gamma(4,np.linalg.norm(W_gt[:,i])) + 3*gamma(0,np.linalg.norm(W_gt[:,i])) - 6*gamma(2,np.linalg.norm(W_gt[:,i]))
     return [W_gt, v_gt, m]
 
-def generateWeights_topk(d = 10, k = 5, s_gt = 0.75, kappa = 2 ):
+def generateWeights_topk(d = 10, k = 5, s_gt = 0.75, kappa = 2, typeW1 = False ):
 
     num_sparse = int(d*k*(1-s_gt))
 
@@ -71,8 +75,13 @@ def generateWeights_topk(d = 10, k = 5, s_gt = 0.75, kappa = 2 ):
         v_gt.append(random.choice(v_choice))
 
     Sigma = np.diag(diag)
-    W_gt = np.dot(np.dot(U, Sigma), np.transpose(V))
     v_gt = np.asarray(v_gt)
+
+    if typeW1:
+        W_gt = gauss_mat_u
+    else:
+        W_gt = np.dot(np.dot(U, Sigma), np.transpose(V))
+
 
     normW1 = []
 
