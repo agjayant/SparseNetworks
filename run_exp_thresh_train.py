@@ -11,7 +11,7 @@ import argparse
 argparser  = argparse.ArgumentParser(description="Experiments n")
 argparser.add_argument('-w', '--winit', help='Weight Initialization', default='tensor')
 argparser.add_argument('-i', '--iht', help='IHT Algorithm Type', default='topk')
-argparser.add_argument('-l', '--log', help='Log File Name', default='log_n.txt')
+argparser.add_argument('-l', '--log', help='Log File Name', default='log_thresh_train.txt')
 argparser.add_argument('-n', '--numT', help='Number of Trials', default=5)
 argparser.add_argument('-gt', '--gtinit', help='Type of Ground Truth Weight Init', default=False)
 args = argparser.parse_args()
@@ -45,14 +45,27 @@ noise_sd = 0
 thresh_train = 0.15
 sparse_train = 0.75
 
-num_trials = args.numT
+if iht == 'topk':
+    w_gt, v_gt, m =  generateWeights_topk(d, k, sparse_gt, bool(args.gtinit))
+else:
+    w_gt, v_gt, m =  generateWeights(d, k, thresh_gt, bool(args.gtinit))
 
-## Vary n
-exp_n = [2000, 4000, 6000, 8000, 10000]
+train_x, train_y, test_x, test_y = generateData(w_gt, v_gt, n, test_n, d)
+train_y_noisy = train_y + np.random.normal(0, noise_sd, n)
+
+if random:
+    tensorWeights = []
+else:
+    tensorWeights = tensorInit(train_x, train_y_noisy, w_gt, m ,k, eng)
+
+
+num_trials = args.numT
+## Vary thresh_train
+exp_thresh_train = [0.0, 0.05, 0.10, 0.15, 0.20]
 
 logFile = open(args.log,'w')
-for n in exp_n:
 
+for thresh_train in exp_thresh_train:
 
     recovery_this = []
     recovery_o_this = []
@@ -66,23 +79,9 @@ for n in exp_n:
 
     for trial in range(num_trials):
 
-        print "Experiment Starting for n= ",n, " trial: ", trial
+        print "Experiment Starting for thresh_train = ",thresh_train, " trial: ", trial
 
-        if iht == 'topk':
-            w_gt, v_gt, m =  generateWeights_topk(d, k, sparse_gt, bool(args.gtinit))
-        else:
-            w_gt, v_gt, m =  generateWeights(d, k, thresh_gt, bool(args.gtinit))
-
-        train_x, train_y, test_x, test_y = generateData(w_gt, v_gt, n, test_n, d)
-        train_y_noisy = train_y + np.random.normal(0, noise_sd, n)
-
-        if random:
-            tensorWeights = []
-        else:
-            tensorWeights = tensorInit(train_x, train_y_noisy, w_gt, m ,k, eng)
-
-
-        if iht == 'topk':
+         if iht == 'topk':
             w_res, train_loss, test_loss = train_topk(train_x, train_y_noisy, test_x,
                                                  test_y,
                                                  tensorWeights,v_gt, sparse_train,
@@ -122,7 +121,7 @@ for n in exp_n:
         truep.append(recoveryStructure[3])
         truep_o.append(recoveryStructure_o[3])
 
-        false_posit.append(recoveryStructure_o[0])
+        false_post.append(recoveryStructure_o[0])
 
     avg_recov = np.mean(recovery_this)
     std_recov = np.std(recovery_this)
@@ -141,12 +140,12 @@ for n in exp_n:
     std_truep_o = np.std(truep_o)
 
 
-    logFile.write(str(n)+' '+str(avg_recov)+' '+str(std_recov) + ' '+str(avg_recov_o)+' '+str(std_recov_o)+' ' )
+    logFile.write(str(thresh_train)+' '+str(avg_recov)+' '+str(std_recov) + ' '+str(avg_recov_o)+' '+str(std_recov_o)+' ' )
     logFile.write(str(avg_truen) + ' '+ str(std_truen)+' ')
     logFile.write(str(avg_truen_o) + ' '+ str(std_truen_o)+' ')
     logFile.write(str(avg_truep) + ' '+ str(std_truep)+' ')
-    logFile.write(str(avg_truep_o) + ' '+ str(std_truep_o)+' ')
-    logFile.write(str(np.mean(false_posit)) + ' '+ str(np.std(false_posit)))
+    logFile.write(str(avg_truep_o) + ' '+ str(std_truep_o) +' ')
+    logFile.write(str(np.mean(false_posit)) + ' '+ str(np.std(false_posit)) )
     logFile.write('\n')
 
 logFile.close()

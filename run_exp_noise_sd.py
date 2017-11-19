@@ -61,6 +61,7 @@ for noise_sd in exp_noise_sd:
     truen = []
     truen_o = []
 
+    false_posit = []
     for trial in range(num_trials):
 
         print "Experiment Starting for noise_sd = ",noise_sd, " trial: ", trial
@@ -118,6 +119,7 @@ for noise_sd in exp_noise_sd:
         truen_o.append(recoveryStructure_o[2])
         truep.append(recoveryStructure[3])
         truep_o.append(recoveryStructure_o[3])
+        false_posit.append(recoveryStructure_o[0])
 
     avg_recov = np.mean(recovery_this)
     std_recov = np.std(recovery_this)
@@ -140,7 +142,8 @@ for noise_sd in exp_noise_sd:
     logFile.write(str(avg_truen) + ' '+ str(std_truen)+' ')
     logFile.write(str(avg_truen_o) + ' '+ str(std_truen_o)+' ')
     logFile.write(str(avg_truep) + ' '+ str(std_truep)+' ')
-    logFile.write(str(avg_truep_o) + ' '+ str(std_truep_o))
+    logFile.write(str(avg_truep_o) + ' '+ str(std_truep_o)+' ')
+    logFile.write(str(np.mean(false_posit)) + ' '+ str(np.std(false_posit)))
     logFile.write('\n')
 
 logFile.close()
