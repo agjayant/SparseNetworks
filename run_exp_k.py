@@ -18,7 +18,7 @@ args = argparser.parse_args()
 
 
 num_epoch = 25
-num_epoch_pretrain = 5
+num_epoch_pretrain = -1
 epsilon = 1e-4
 recovery_delta = 1e-2
 batch_size = 20
@@ -45,7 +45,7 @@ noise_sd = 0
 thresh_train = 0.15
 sparse_train = 0.75
 
-num_trials = args.numT
+num_trials = int(args.numT)
 
 ## Vary k
 exp_k = [2, 4, 5, 7, 10]
@@ -69,9 +69,9 @@ for k in exp_k:
         print "Experiment Starting for k= ",k, " trial: ", trial
 
         if iht == 'topk':
-            w_gt, v_gt, m =  generateWeights_topk(d, k, sparse_gt, bool(args.gtinit))
+            w_gt, v_gt, m =  generateWeights_topk(d, k, sparse_gt)
         else:
-            w_gt, v_gt, m =  generateWeights(d, k, thresh_gt, bool(args.gtinit))
+            w_gt, v_gt, m =  generateWeights(d, k, thresh_gt)
 
         train_x, train_y, test_x, test_y = generateData(w_gt, v_gt, n, test_n, d)
         train_y_noisy = train_y + np.random.normal(0, noise_sd, n)
@@ -111,8 +111,8 @@ for k in exp_k:
         recoveryVal = recovery(w_gt, v_gt, w_res, v_gt)
         recoveryVal_o = recovery(w_gt, v_gt, w_res_o, v_gt)
 
-        recoveryStructure = structDiff(w_gt, w_res, recovery_delta)
-        recoveryStructure_o = structDiff(w_gt, w_res_o, recovery_delta)
+        recoveryStructure = structDiff2(w_gt, w_res, recovery_delta)
+        recoveryStructure_o = structDiff2(w_gt, w_res_o, recovery_delta)
 
         recovery_this.append(recoveryVal)
         recovery_o_this.append(recoveryVal_o)

@@ -32,6 +32,53 @@ def structDiff(w_gt, w_res, delta = 1e-4):
 
     return [false_alarm, mis_det, tr_positive, tr_negative]
 
+def structDiff2(w_gt, w_res,v_gt, delta = 1e-2):
+    '''
+    Returns :
+    False Alarm --  GT - 0 Res- Non 0
+    Mis Detection -- GT - Non 0 Res - 0
+    True Positives -- GT - 0 Res - 0
+    True Negatives -- GT - Non 0 Res - Non 0
+    '''
+
+    k = np.shape(v_gt)[0]
+    permList = list(itertools.permutations(range(k)))
+
+    w_p = np.transpose(w_res)
+    v_p = v_gt
+    sortList = []
+    for perm in permList:
+        w_pi = w_p[list(perm)]
+        v_pi = v_p[list(perm)]
+
+        w_gt = np.transpose(w_gt)
+
+        if sum(v_gt == v_pi) == k:
+            w_gt = w_gt.flatten()
+            w_res = w_pi.flatten()
+
+            num_w = len(w_gt)
+            assert(num_w == len(w_res)), 'Dimension not Equal\n'
+
+            false_alarm, mis_det, tr_positive, tr_negative = 0,0,0,0
+
+            for w in range(num_w):
+                if abs(w_gt[w]) < delta and abs(w_res[w]) > delta :
+                    false_alarm += 1
+                elif abs(w_gt[w]) > delta and abs(w_res[w]) < delta :
+                    mis_det += 1
+                elif abs(w_gt[w]) < delta and abs(w_res[w]) < delta :
+                    tr_positive += 1
+                elif abs(w_gt[w]) > delta and abs(w_res[w]) > delta :
+                    tr_negative += 1
+            sortList.append((tr_positive,[false_alarm, mis_det, tr_positive, tr_negative]))
+        else:
+            continue
+    sortList.sort(reverse=True)
+#     print sortList
+#     return [false_alarm, mis_det, tr_positive, tr_negative]
+    return sortList[0][1]
+
 
 def recovery(W_gt, v_gt, w_res, v_res ):
 

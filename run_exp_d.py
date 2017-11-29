@@ -45,7 +45,7 @@ noise_sd = 0
 thresh_train = 0.15
 sparse_train = 0.75
 
-num_trials = args.numT
+num_trials = int(args.numT)
 
 ## Vary d
 exp_d = [10, 20, 40, 70, 100]
@@ -69,9 +69,9 @@ for d in exp_d:
         print "Experiment Starting for d= ",d, " trial: ", trial
 
         if iht == 'topk':
-            w_gt, v_gt, m =  generateWeights_topk(d, k, sparse_gt, bool(args.gtinit))
+            w_gt, v_gt, m =  generateWeights_topk(d, k, sparse_gt)
         else:
-            w_gt, v_gt, m =  generateWeights(d, k, thresh_gt, bool(args.gtinit))
+            w_gt, v_gt, m =  generateWeights(d, k, thresh_gt)
 
         train_x, train_y, test_x, test_y = generateData(w_gt, v_gt, n, test_n, d)
         train_y_noisy = train_y + np.random.normal(0, noise_sd, n)
@@ -111,8 +111,8 @@ for d in exp_d:
         recoveryVal = recovery(w_gt, v_gt, w_res, v_gt)
         recoveryVal_o = recovery(w_gt, v_gt, w_res_o, v_gt)
 
-        recoveryStructure = structDiff(w_gt, w_res, recovery_delta)
-        recoveryStructure_o = structDiff(w_gt, w_res_o, recovery_delta)
+        recoveryStructure = structDiff2(w_gt, w_res, recovery_delta)
+        recoveryStructure_o = structDiff2(w_gt, w_res_o, recovery_delta)
 
         recovery_this.append(recoveryVal)
         recovery_o_this.append(recoveryVal_o)
